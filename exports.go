@@ -29,15 +29,10 @@ type Logger interface {
 
 	With(v ...interface{}) Logger
 	WithName(name string) Logger
-	StdLogger() *stdLog.Logger
-}
-
-type WithSyncer interface {
-	Sync()
-}
-
-type WithDepth interface {
 	AddDepth(depth int) Logger
+	StdLogger() *stdLog.Logger
+
+	Sync()
 }
 
 var logger = NewSimpleLogger("", os.Stdout, nil).AddDepth(1)
@@ -46,22 +41,16 @@ func Use(l Logger) {
 	if logger != nil {
 		var oldLogger = logger
 		defer func() {
-			if _s, ok := oldLogger.(WithSyncer); ok {
-				_s.Sync()
-			}
+			oldLogger.Sync()
 		}()
 	}
-	if _d, ok := l.(WithDepth); ok {
-		l = _d.AddDepth(1)
-	}
+	l = l.AddDepth(1)
 	logger = l
 }
 
 func Current() Logger {
 	var l = logger
-	if _d, ok := l.(WithDepth); ok {
-		l = _d.AddDepth(-1)
-	}
+	l = l.AddDepth(-1)
 	return l
 }
 
@@ -125,10 +114,12 @@ func With(v ...interface{}) Logger {
 	return Current().With(v...)
 }
 
+func WithName(name string) Logger {
+	return Current().WithName(name)
+}
+
 func Sync() {
-	if _s, ok := logger.(WithSyncer); ok {
-		_s.Sync()
-	}
+	logger.Sync()
 }
 
 func StdLogger() *stdLog.Logger {
