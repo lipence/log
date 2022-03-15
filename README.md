@@ -34,6 +34,8 @@ type Logger interface {
 	With(v ...interface{}) Logger // fork current logger and add data
 	WithName(name string) Logger  // fork current logger and change name
 	StdLogger() *stdLog.Logger    // get underlying std logger
+	AddDepth(depth int) Logger    // set caller skip (offset)
+	Sync()                        // write data
 }
 
 type WithSyncer interface { // optional for external logger
@@ -81,6 +83,7 @@ func apiPutOrderHandler(ctx context.Context) {
 ```
 
 **BeforeShutdown**: sync log: e.g.
+
 ```
 func BeforeShutdown() {
 	log.Sync()

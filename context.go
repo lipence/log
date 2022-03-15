@@ -12,7 +12,7 @@ const (
 
 func Context(ctx context.Context, l Logger, with ...interface{}) context.Context {
 	if l == nil {
-		l = logger
+		l = Current()
 	}
 	return context.WithValue(ctx, ContextKeyLogger, l.With(with...))
 }
@@ -20,9 +20,9 @@ func Context(ctx context.Context, l Logger, with ...interface{}) context.Context
 func C(ctx context.Context) (l Logger) {
 	var ok bool
 	if loggerItf := ctx.Value(ContextKeyLogger); loggerItf == nil {
-		return logger
+		return Current()
 	} else if l, ok = loggerItf.(Logger); !ok {
-		return logger
+		return Current()
 	} else {
 		return l
 	}
