@@ -33,12 +33,10 @@ type Logger interface {
 }
 
 type WithSyncer interface {
-	Logger
 	Sync()
 }
 
 type WithDepth interface {
-	Logger
 	AddDepth(depth int) Logger
 }
 
@@ -124,7 +122,7 @@ func Printf(format string, m ...interface{}) {
 }
 
 func With(v ...interface{}) Logger {
-	return logger.With(v...)
+	return Current().With(v...)
 }
 
 func Sync() {
@@ -134,5 +132,5 @@ func Sync() {
 }
 
 func StdLogger() *stdLog.Logger {
-	return logger.StdLogger()
+	return Current().StdLogger()
 }
